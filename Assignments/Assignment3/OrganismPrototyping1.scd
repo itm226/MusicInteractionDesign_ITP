@@ -1,3 +1,23 @@
+(
+var oscStuff, makeBuffer;
+s.options.sampleRate = 48e3;
+s.options.memSize = 2.pow(21);
+s.options.numInputBusChannels = 2;
+
+oscStuff = {
+	["/b_set", "/b_setn", "/b_inf"].do{|string|
+		var name = string.split($_);
+		name = name[1].asSymbol;
+		OSCdef(name, {|...args| args.postln}, string);
+
+	};
+	//"OSC stuff set up!".postln; "".postln;
+};
+
+s.boot;
+ServerTree.add(oscStuff);
+)
+
 o = NodeProxy.audio(s, 2);
 o.play;
 o.fadeTime_(2)
