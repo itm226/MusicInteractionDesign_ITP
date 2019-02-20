@@ -1,3 +1,17 @@
+
+//Evaluate this block of code to set up the server.
+//Subsequently, evaluate all blocks of code or individual lines in order.
+
+/*This is a workspace, not a program. It represents the stopping point of
+
+a free improvisation that was live coded. As a result, everything here,
+
+of course, can be changed or fiddled with or whatever. This is just a
+
+big messy fiddle if a fiddle were both made out of play-dough and
+
+constrained by a rigid, strict syntax.*/
+
 (
 var oscStuff, makeBuffer;
 s.options.sampleRate = 48e3;
@@ -18,14 +32,17 @@ s.boot;
 ServerTree.add(oscStuff);
 )
 
+(
 p = ProxySpace.push(s, clock: TempoClock.default);
 s.sendMsg("/b_alloc", 0, s.sampleRate * 25)
-~o.play.fadeTime_(4.0)
+~o.play;
+~o.fadeTime_(4.0);
 ~o.source = ~n;
+)
 
 (
 ~rec[0] = {
-	var in = (SoundIn.ar(0) * 3).clip(0.0, 1.0);
+	var in = (SoundIn.ar(0) * 3).clip(0.0, 1.0) * 4;
 	BufWr.ar(in, 0, Phasor.ar(0, BufRateScale.kr(0), 0, BufFrames.kr(0)), loop: \loop.kr(1));
 }
 )
@@ -82,7 +99,7 @@ s.sendMsg("/b_alloc", 0, s.sampleRate * 25)
 
 s.sendMsg("/b_alloc", 1, s.sampleRate *25);
 (
-~rec2 = {
+~rec2[0] = {
 	var in = SoundIn.ar(0, 1) * 2 + (~n.ar.sum * 0.25);
 	BufWr.ar(in, 1, Phasor.ar(0, BufRateScale.kr(1), 0, BufFrames.kr(1)));
 };
@@ -122,14 +139,6 @@ s.sendMsg("/b_alloc", 1, s.sampleRate *25);
 };
 
 ~e[3] = \filter -> {|in|
-	GVerb.ar(in.sum * 0.5, 24.0, 3.0)
-};
-~e.set(\wet3, 0.125);
-)
-/*Typing to type to toype to type to type that's al ll I'm doing now*/
-
-(
-~e[3] = \filter -> {|in|
 	Splay.ar(
 		BPF.ar(in,
 			LFNoise2.kr(rrand(0.01, 0.1))
@@ -151,9 +160,12 @@ s.sendMsg("/b_alloc", 1, s.sampleRate *25);
 ~e.set(\wet5, 1.0);
 )
 
-~o.fadeTime_(4.0)
-~o[0] = {(~n.ar * LFNoise1.kr(0.05).range(0.0, 0.75)) + (~e.ar * LFNoise1.kr(0.0498765).range(0.0, 0.25)) * 1}
 (
+~o[0] = {
+	(~n.ar * LFNoise1.kr(0.05).range(0.0, 0.75))
+	+ (~e.ar * LFNoise1.kr(0.0498765).range(0.0, 0.25)) * 1
+};
+
 ~o[1] = \filter -> {|in|
 	var local = LocalIn.ar(2) + in;
 	var delay = DelayN.ar(local, 31, LFNoise1.kr(0.005).range(5.0, 31.0));
@@ -172,6 +184,7 @@ s.sendMsg("/b_alloc", 1, s.sampleRate *25);
 	JPverb.ar(in.sum, 8.0, 0.25, 20.0, high: 0.8, lowcut: 80, highcut: 7500)
 };
 ~o.set(\wet3, 0.125/1.5);
-)
 ~o.xset(\wet1, 0.275, \wet2, 0.75);
+)
+
 ~impulserate = {LFNoise2.kr(LFNoise2.kr(0.0025).range(0.005, 0.125)).exprange(0.25, 35.0)}
