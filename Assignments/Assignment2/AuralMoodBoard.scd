@@ -60,3 +60,6 @@ w.view.decorator = FlowLayout(w.view.bounds, 10@10, 20@2.5);
 buffers.do({|buffer| constructButtons.value(buffer)});
 )
 
+//Play output:
+OSCdef(\info, {arg ...args; args.postln}, "/b_info")
+x= play{var b = 4; PlayBuf.ar(2, b, BufRateScale.kr(b),doneAction: Done.freeSelf)};
